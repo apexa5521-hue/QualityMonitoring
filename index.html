@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0D47A1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>APEXCARE — نظام إدارة الجودة</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --b950:#0D1B3E; --b900:#0D47A1; --b800:#1565C0; --b600:#1E88E5; --b400:#42A5F5;
+  --b100:#BBDEFB; --b50:#E3F2FD;
+  --teal:#00897B; --teal-lt:#E0F2F1;
+  --amber:#F57C00; --amber-lt:#FFF3E0;
+  --red:#C62828; --red-lt:#FFEBEE;
+  --green:#2E7D32; --green-lt:#E8F5E9;
+  --purple:#6A1B9A; --purple-lt:#F3E5F5;
+  --white:#fff; --g50:#F8FAFF; --g100:#EEF2F7; --g300:#B0BEC5; --g600:#546E7A;
+  --sh-sm:0 1px 3px rgba(13,71,161,.12); --sh-md:0 4px 16px rgba(13,71,161,.16);
+  --r:14px; --rs:8px;
+  --font:'IBM Plex Sans Arabic',sans-serif; --mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--font);background:var(--g50);color:var(--b950);min-height:100vh;overflow-x:hidden}
+
+/* HEADER */
+.hdr{background:linear-gradient(135deg,var(--b950),var(--b900) 60%,var(--b800));padding:18px 16px 0;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,.28)}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.logo-area{display:flex;align-items:center;gap:10px}
+.logo-badge{width:42px;height:42px;background:linear-gradient(135deg,var(--b400),var(--teal));border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 12px rgba(66,165,245,.4)}
+.brand{font-size:17px;font-weight:700;color:#fff;letter-spacing:.4px}
+.sub{font-size:10px;color:var(--b100)}
+.hdr-date{font-family:var(--mono);font-size:10px;color:var(--b100);background:rgba(255,255,255,.1);padding:4px 10px;border-radius:20px}
+
+/* TABS */
+.tabs{display:flex;gap:3px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:10px 13px;border:none;background:transparent;color:rgba(255,255,255,.55);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap}
+.tab.on{color:#fff;border-bottom-color:var(--b400);background:rgba(255,255,255,.08)}
+
+/* MAIN */
+main{padding:18px 14px 100px;max-width:600px;margin:0 auto}
+.panel{display:none;animation:fadeUp .28s ease}
+.panel.on{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARD */
+.card{background:#fff;border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:var(--sh-sm);border:1px solid rgba(13,71,161,.07)}
+.card-title{font-size:13px;font-weight:700;color:var(--b900);margin-bottom:14px;display:flex;align-items:center;gap:8px;padding-bottom:11px;border-bottom:2px solid var(--b50)}
+.ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.ico-b{background:var(--b50)}.ico-t{background:var(--teal-lt)}.ico-a{background:var(--amber-lt)}.ico-g{background:var(--green-lt)}.ico-p{background:var(--purple-lt)}
+
+/* FIELDS */
+.field{margin-bottom:12px}
+.lbl{font-size:11px;font-weight:600;color:var(--g600);margin-bottom:5px;display:block}
+.lbl .en{font-weight:400;color:var(--g300);margin-right:5px;font-size:10px}
+input[type=text],input[type=date],textarea,select{width:100%;padding:11px 13px;border:1.5px solid var(--g100);border-radius:var(--rs);font-family:var(--font);font-size:13px;color:var(--b950);background:var(--g50);transition:border-color .2s,box-shadow .2s;outline:none;-webkit-appearance:none}
+input:focus,textarea:focus,select:focus{border-color:var(--b600);box-shadow:0 0 0 3px rgba(30,136,229,.12);background:#fff}
+textarea{resize:vertical;min-height:75px;line-height:1.6}
+
+/* BRANCH */
+.branch-sel{display:flex;gap:7px}
+.br-btn{flex:1;padding:11px 8px;border:2px solid var(--g100);border-radius:var(--rs);background:var(--g50);font-family:var(--font);font-size:12px;font-weight:600;color:var(--g600);cursor:pointer;text-align:center;transition:all .2s}
+.br-btn.on{border-color:var(--b600);background:var(--b50);color:var(--b900)}
+
+/* CHECKLIST */
+.chk-list{display:flex;flex-direction:column;gap:7px}
+.chk-item{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;background:var(--g50);border-radius:var(--rs);border:1.5px solid var(--g100);transition:all .2s}
+.chk-item.pass{background:var(--green-lt);border-color:#A5D6A7}
+.chk-item.fail{background:var(--red-lt);border-color:#EF9A9A}
+.chk-lbl{font-size:12px;font-weight:500;flex:1}
+.chk-lbl small{display:block;font-size:10px;color:var(--g300);font-weight:400;margin-top:1px}
+.tog-grp{display:flex;gap:4px}
+.tog{width:34px;height:34px;border:1.5px solid var(--g300);border-radius:7px;background:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.tog.ap{background:var(--green);border-color:var(--green)}
+.tog.af{background:var(--red);border-color:var(--red)}
+
+/* BUTTONS */
+.btn-save{width:100%;padding:15px;background:linear-gradient(135deg,var(--b800),var(--b600));color:#fff;border:none;border-radius:var(--r);font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(30,136,229,.38);display:flex;align-items:center;justify-content:center;gap:7px}
+.btn-save:active{transform:scale(.98)}
+.btn-save.loading{opacity:.7;pointer-events:none}
+.btn-outline{width:100%;padding:11px;background:var(--b50);border:1.5px solid var(--b100);border-radius:var(--rs);font-family:var(--font);font-size:12px;font-weight:600;color:var(--b800);cursor:pointer;transition:all .2s;margin-top:6px}
+
+/* PRIORITY */
+.prio-grp{display:flex;gap:5px}
+.prio-btn{flex:1;padding:9px 5px;border:2px solid var(--g100);border-radius:var(--rs);font-family:var(--font);font-size:11px;font-weight:600;cursor:pointer;text-align:center;transition:all .2s;background:var(--g50);color:var(--g600)}
+.prio-btn[data-v="عاجل"].on{border-color:var(--red);background:var(--red-lt);color:var(--red)}
+.prio-btn[data-v="عادي"].on{border-color:var(--amber);background:var(--amber-lt);color:var(--amber)}
+.prio-btn[data-v="منخفض"].on{border-color:var(--green);background:var(--green-lt);color:var(--green)}
+
+/* SCANNER */
+.scan-area{background:var(--b950);border-radius:var(--r);overflow:hidden;position:relative;margin-bottom:10px}
+#qr-video{width:100%;display:block;max-height:230px;object-fit:cover}
+.scan-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.scan-frame{width:150px;height:150px;border:3px solid var(--b400);border-radius:14px;box-shadow:0 0 0 9999px rgba(13,27,62,.5);animation:sp 2s ease-in-out infinite}
+@keyframes sp{0%,100%{border-color:var(--b400)}50%{border-color:var(--teal)}}
+.scan-line{position:absolute;width:130px;height:2px;background:linear-gradient(90deg,transparent,var(--b400),transparent);animation:sl 2s linear infinite}
+@keyframes sl{0%{top:15px;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:135px;opacity:0}}
+.btn-scan{width:100%;padding:12px;background:linear-gradient(135deg,var(--b950),var(--b900));color:#fff;border:none;border-radius:var(--rs);font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:10px}
+.btn-stop{width:100%;padding:9px;background:var(--red-lt);color:var(--red);border:2px solid #EF9A9A;border-radius:var(--rs);font-family:var(--font);font-size:11px;font-weight:600;cursor:pointer;display:none;margin-bottom:10px}
+.dev-result{background:var(--b50);border:1.5px solid var(--b100);border-radius:var(--rs);padding:11px 13px;margin-top:8px;display:none}
+.dev-result.show{display:block}
+.dev-code{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--b800)}
+.dev-name{font-size:13px;font-weight:700;color:var(--b950);margin-top:3px}
+.dev-meta{font-size:11px;color:var(--g600);margin-top:2px}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-card{background:#fff;border-radius:var(--r);padding:14px;text-align:center;border:1px solid rgba(13,71,161,.07);box-shadow:var(--sh-sm)}
+.stat-num{font-size:30px;font-weight:700;color:var(--b900);font-family:var(--mono);line-height:1;margin-bottom:3px}
+.stat-lbl{font-size:10px;color:var(--g600);font-weight:500;line-height:1.3}
+.prog-wrap{margin-bottom:12px}
+.prog-top{display:flex;justify-content:space-between;margin-bottom:5px}
+.prog-top span{font-size:11px;font-weight:600;color:var(--g600)}
+.prog-top .pct{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--b800)}
+.prog-bar{height:7px;background:var(--g100);border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--b600),var(--teal));transition:width 1s ease}
+
+/* ═══════════════════════════════
+   ACHIEVEMENTS PANEL
+═══════════════════════════════ */
+.ach-toolbar{display:flex;gap:8px;align-items:center;margin-bottom:14px}
+.ach-search{flex:1;padding:10px 13px;border:1.5px solid var(--g100);border-radius:var(--rs);font-family:var(--font);font-size:13px;background:var(--g50);outline:none;color:var(--b950)}
+.ach-search:focus{border-color:var(--b600)}
+.btn-add-ach{padding:10px 16px;background:linear-gradient(135deg,var(--b800),var(--b600));color:#fff;border:none;border-radius:var(--rs);font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;box-shadow:0 2px 8px rgba(30,136,229,.35)}
+
+.ach-filters{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.ach-filters::-webkit-scrollbar{display:none}
+.filter-chip{flex-shrink:0;padding:6px 13px;border:1.5px solid var(--g100);border-radius:20px;background:#fff;font-family:var(--font);font-size:11px;font-weight:600;color:var(--g600);cursor:pointer;transition:all .18s}
+.filter-chip.on{background:var(--b900);border-color:var(--b900);color:#fff}
+
+.ach-list{display:flex;flex-direction:column;gap:10px}
+.ach-empty{text-align:center;padding:40px 20px;color:var(--g300)}
+.ach-empty .big{font-size:40px;margin-bottom:10px}
+.ach-empty p{font-size:13px}
+
+/* Achievement Card */
+.ach-card{background:#fff;border-radius:var(--r);padding:0;border:1px solid rgba(13,71,161,.08);box-shadow:var(--sh-sm);overflow:hidden;transition:box-shadow .2s}
+.ach-card:hover{box-shadow:var(--sh-md)}
+.ach-card-header{display:flex;align-items:flex-start;gap:10px;padding:14px 14px 10px}
+.ach-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ach-meta{flex:1;min-width:0}
+.ach-section{font-size:10px;font-weight:700;color:var(--b600);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.ach-title{font-size:13px;font-weight:700;color:var(--b950);line-height:1.4;margin-bottom:4px}
+.ach-title-en{font-size:11px;color:var(--g300);font-weight:400;line-height:1.4;margin-bottom:6px;display:none}
+.ach-card.show-en .ach-title-en{display:block}
+.ach-date{font-size:10px;font-family:var(--mono);color:var(--g300)}
+.ach-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;margin-top:4px}
+.badge-done{background:var(--green-lt);color:var(--green)}
+.badge-prog{background:var(--amber-lt);color:var(--amber)}
+.badge-plan{background:var(--purple-lt);color:var(--purple)}
+.badge-hold{background:var(--g100);color:var(--g600)}
+
+.ach-prog-bar{height:4px;background:var(--g100);margin:0 14px 0}
+.ach-prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--b600),var(--teal));transition:width .6s ease}
+
+.ach-notes-strip{padding:6px 14px;font-size:11px;color:var(--g600);background:var(--g50);border-top:1px solid var(--g100);line-height:1.4}
+
+.ach-actions{display:flex;gap:0;border-top:1px solid var(--g100)}
+.ach-action-btn{flex:1;padding:10px 8px;border:none;background:transparent;font-family:var(--font);font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:background .15s}
+.ach-action-btn:hover{background:var(--g50)}
+.ach-action-btn.edit{color:var(--b700)}
+.ach-action-btn.toggle-en{color:var(--teal)}
+.ach-action-btn.del{color:var(--red)}
+.ach-action-btn+.ach-action-btn{border-right:1px solid var(--g100)}
+
+/* MODAL */
+.modal-backdrop{position:fixed;inset:0;background:rgba(13,27,62,.55);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.modal-backdrop.open{display:flex;animation:bdin .25s ease}
+@keyframes bdin{from{opacity:0}to{opacity:1}}
+.modal{background:#fff;border-radius:20px 20px 0 0;padding:0 0 30px;width:100%;max-width:600px;max-height:92vh;overflow-y:auto;animation:mdin .3s ease}
+@keyframes mdin{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:18px 18px 14px;position:sticky;top:0;background:#fff;border-bottom:1px solid var(--g100);z-index:1}
+.modal-title{font-size:15px;font-weight:700;color:var(--b900);display:flex;align-items:center;gap:8px}
+.modal-close{width:32px;height:32px;border:none;background:var(--g100);border-radius:8px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--g600)}
+.modal-body{padding:16px 18px 0}
+
+/* PRGRESS SLIDER */
+.prog-input-wrap{display:flex;align-items:center;gap:10px;margin-top:4px}
+.prog-input-wrap input[type=range]{flex:1;accent-color:var(--b600)}
+.prog-pct{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--b800);width:42px;text-align:center}
+
+/* STATUS SELECT VISUAL */
+.status-sel{display:flex;gap:6px;flex-wrap:wrap}
+.status-opt{padding:7px 13px;border:2px solid var(--g100);border-radius:20px;font-family:var(--font);font-size:11px;font-weight:600;cursor:pointer;background:#fff;color:var(--g600);transition:all .18s}
+.status-opt[data-s="مكتمل"].on{border-color:var(--green);background:var(--green-lt);color:var(--green)}
+.status-opt[data-s="جارٍ"].on{border-color:var(--amber);background:var(--amber-lt);color:var(--amber)}
+.status-opt[data-s="مخطط"].on{border-color:var(--purple);background:var(--purple-lt);color:var(--purple)}
+.status-opt[data-s="متوقف"].on{border-color:var(--g300);background:var(--g100);color:var(--g600)}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--b950);color:#fff;padding:11px 22px;border-radius:28px;font-size:12px;font-weight:600;opacity:0;transition:all .3s;z-index:999;white-space:nowrap;max-width:90vw;text-align:center;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{background:var(--green)}
+.toast.err{background:var(--red)}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--g100);display:flex;box-shadow:0 -4px 20px rgba(13,71,161,.09);z-index:100}
+.nav-item{flex:1;padding:9px 4px 11px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font-family:var(--font);font-size:9px;color:var(--g300);font-weight:500;transition:all .2s}
+.nav-item.on{color:var(--b800)}
+.nav-icon{font-size:20px;line-height:1}
+.nav-item.on .nav-icon{transform:scale(1.1)}
+
+/* CONFIRM */
+.confirm-strip{background:var(--red-lt);border:1.5px solid #EF9A9A;border-radius:var(--rs);padding:12px 14px;margin-bottom:10px;display:none}
+.confirm-strip.show{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.confirm-strip p{font-size:12px;font-weight:600;color:var(--red);flex:1}
+.confirm-strip .cbtn{padding:8px 14px;border:none;border-radius:6px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer}
+.cbtn-yes{background:var(--red);color:#fff}
+.cbtn-no{background:var(--g100);color:var(--g600)}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-top">
+    <div class="logo-area">
+      <div class="logo-badge">🏥</div>
+      <div>
+        <div class="brand">APEXCARE</div>
+        <div class="sub">نظام إدارة الجودة • Quality System</div>
+      </div>
+    </div>
+    <div class="hdr-date" id="hdrDate">—</div>
+  </div>
+  <div class="tabs" id="tabBar">
+    <button class="tab on" data-tab="dashboard">📊 لوحة</button>
+    <button class="tab" data-tab="achievements">⭐ الإنجازات</button>
+    <button class="tab" data-tab="audit">🔍 زيارة</button>
+    <button class="tab" data-tab="daily">📋 يومي</button>
+    <button class="tab" data-tab="maintenance">🔧 صيانة</button>
+    <button class="tab" data-tab="cbahi">🤝 سباهي</button>
+  </div>
+</header>
+
+<main>
+
+<!-- ══════════ DASHBOARD ══════════ -->
+<div class="panel on" id="panel-dashboard">
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-num" id="s-ach">—</div><div class="stat-lbl">إجمالي الإنجازات<br>Total</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-done">—</div><div class="stat-lbl">مكتملة<br>Completed</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-audit">—</div><div class="stat-lbl">زيارات ميدانية<br>Audits</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-maint">—</div><div class="stat-lbl">بلاغات صيانة<br>Maintenance</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title"><div class="ico ico-g">📈</div>مؤشرات الأداء</div>
+    <div class="prog-wrap">
+      <div class="prog-top"><span>نسبة الإنجازات المكتملة</span><span class="pct" id="p-ach-pct">—%</span></div>
+      <div class="prog-bar"><div class="prog-fill" id="p-ach-bar" style="width:0%"></div></div>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-top"><span>Audit Pass Rate</span><span class="pct" id="p-audit-pct">—%</span></div>
+      <div class="prog-bar"><div class="prog-fill" id="p-audit-bar" style="width:0%"></div></div>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-top"><span>رخص MDMA / SFDA</span><span class="pct">90%</span></div>
+      <div class="prog-bar"><div class="prog-fill" style="width:90%;background:linear-gradient(90deg,var(--amber),var(--b400))"></div></div>
+    </div>
+  </div>
+  <button class="btn-save" onclick="loadDashboard()" style="background:linear-gradient(135deg,var(--teal),var(--b600))">🔄 تحديث &nbsp;Refresh</button>
+</div>
+
+<!-- ══════════ ACHIEVEMENTS ══════════ -->
+<div class="panel" id="panel-achievements">
+
+  <div class="ach-toolbar">
+    <input class="ach-search" id="achSearch" placeholder="🔍 بحث في الإنجازات..." oninput="filterAchievements()" type="text">
+    <button class="btn-add-ach" onclick="openModal()">➕ إضافة</button>
+  </div>
+
+  <div class="ach-filters" id="achFilters">
+    <button class="filter-chip on" data-f="all" onclick="setFilter(this,'all')">الكل</button>
+    <button class="filter-chip" data-f="مكتمل" onclick="setFilter(this,'مكتمل')">✅ مكتمل</button>
+    <button class="filter-chip" data-f="جارٍ" onclick="setFilter(this,'جارٍ')">🔄 جارٍ</button>
+    <button class="filter-chip" data-f="مخطط" onclick="setFilter(this,'مخطط')">📌 مخطط</button>
+    <button class="filter-chip" data-f="متوقف" onclick="setFilter(this,'متوقف')">⏸ متوقف</button>
+  </div>
+
+  <div class="confirm-strip" id="deleteConfirm">
+    <p>⚠️ تأكيد حذف هذا الإنجاز؟</p>
+    <button class="cbtn cbtn-no" onclick="cancelDelete()">إلغاء</button>
+    <button class="cbtn cbtn-yes" onclick="confirmDelete()">حذف</button>
+  </div>
+
+  <div class="ach-list" id="achList">
+    <div class="ach-empty"><div class="big">⏳</div><p>جارٍ تحميل الإنجازات...</p></div>
+  </div>
+</div>
+
+<!-- ══════════ FIELD AUDIT ══════════ -->
+<div class="panel" id="panel-audit">
+  <div class="card">
+    <div class="card-title"><div class="ico ico-b">🏢</div>الفرع • Branch</div>
+    <div class="branch-sel">
+      <button class="br-btn on" onclick="selBranch(this,'بريدة','Buraydah','audit')">🏥 بريدة</button>
+      <button class="br-btn" onclick="selBranch(this,'عنيزة','Unaizah','audit')">🏥 عنيزة</button>
+    </div>
+    <input type="hidden" id="audit-br-ar" value="بريدة">
+    <input type="hidden" id="audit-br-en" value="Buraydah">
+  </div>
+  <div class="card">
+    <div class="card-title"><div class="ico ico-t">✅</div>قائمة المراجعة • Checklist</div>
+    <div class="chk-list">
+      <div class="chk-item" id="ci-re"><div class="chk-lbl">١ · أداء الاستقبال وتجربة المريض<small>Reception Performance &amp; Patient Experience</small></div><div class="tog-grp"><button class="tog" onclick="togChk('re','pass',this)">✅</button><button class="tog" onclick="togChk('re','fail',this)">❌</button></div></div>
+      <div class="chk-item" id="ci-ss"><div class="chk-lbl">٢ · ترتيب بيئة العمل — 5S<small>Workplace Organization — 5S</small></div><div class="tog-grp"><button class="tog" onclick="togChk('ss','pass',this)">✅</button><button class="tog" onclick="togChk('ss','fail',this)">❌</button></div></div>
+      <div class="chk-item" id="ci-st"><div class="chk-lbl">٣ · مكافحة العدوى (IPC)<small>Infection Prevention &amp; Control</small></div><div class="tog-grp"><button class="tog" onclick="togChk('st','pass',this)">✅</button><button class="tog" onclick="togChk('st','fail',this)">❌</button></div></div>
+      <div class="chk-item" id="ci-em"><div class="chk-lbl">٤ · جاهزية الطوارئ والإسعافات الأولية<small>Emergency &amp; First Aid Readiness</small></div><div class="tog-grp"><button class="tog" onclick="togChk('em','pass',this)">✅</button><button class="tog" onclick="togChk('em','fail',this)">❌</button></div></div>
+      <div class="chk-item" id="ci-la"><div class="chk-lbl">٥ · سلامة الليزر<small>Laser Safety</small></div><div class="tog-grp"><button class="tog" onclick="togChk('la','pass',this)">✅</button><button class="tog" onclick="togChk('la','fail',this)">❌</button></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><div class="ico ico-a">📝</div>ملاحظات • Notes</div>
+    <div class="field"><label class="lbl">عربي</label><textarea id="audit-notes-ar" placeholder="ملاحظات إضافية..." rows="3"></textarea></div>
+    <div class="field"><label class="lbl">English</label><textarea id="audit-notes-en" placeholder="Additional notes..." rows="2" dir="ltr"></textarea></div>
+  </div>
+  <button class="btn-save" id="bs-audit" onclick="saveAudit()">💾 حفظ نتيجة الزيارة</button>
+</div>
+
+<!-- ══════════ DAILY ══════════ -->
+<div class="panel" id="panel-daily">
+  <div class="card">
+    <div class="card-title"><div class="ico ico-b">🏢</div>الفرع • Branch</div>
+    <div class="branch-sel">
+      <button class="br-btn on" onclick="selBranch(this,'بريدة','Buraydah','daily')">🏥 بريدة</button>
+      <button class="br-btn" onclick="selBranch(this,'عنيزة','Unaizah','daily')">🏥 عنيزة</button>
+    </div>
+    <input type="hidden" id="daily-br-ar" value="بريدة">
+    <input type="hidden" id="daily-br-en" value="Buraydah">
+  </div>
+  <div class="card">
+    <div class="card-title"><div class="ico ico-g">✅</div>ما تم إنجازه اليوم</div>
+    <div class="field"><label class="lbl">المنجزات</label><textarea id="daily-done-ar" placeholder="اكتب ما أتممته اليوم..." rows="4"></textarea></div>
+    <div class="field"><label class="lbl">Completed <span class="en">optional</span></label><textarea id="daily-done-en" placeholder="What was completed..." rows="3" dir="ltr"></textarea></div>
+  </div>
+  <div class="card">
+    <div class="card-title"><div class="ico ico-a">⏳</div>مهام لم تكتمل</div>
+    <div class="field"><label class="lbl">قيد التنفيذ</label><textarea id="daily-pend-ar" placeholder="مهام عالقة لتتذكرها غداً..." rows="4"></textarea></div>
+    <div class="field"><label class="lbl">Pending <span class="en">optional</span></label><textarea id="daily-pend-en" placeholder="Pending tasks..." rows="3" dir="ltr"></textarea></div>
+  </div>
+  <button class="btn-save" id="bs-daily" onclick="saveDaily()">💾 حفظ متابعة اليوم</button>
+</div>
+
+<!-- ══════════ MAINTENANCE ══════════ -->
+<div class="panel" id="panel-maintenance">
+  <div class="card">
+    <div class="card-title"><div class="ico ico-b">📷</div>ماسح الباركود • QR Scanner</div>
+    <button class="btn-scan" id="btnStartScan" onclick="startScanner()">📷 مسح كود الجهاز &nbsp;|&nbsp; Scan Device</button>
+    <button class="btn-stop" id="btnStopScan" onclick="stopScanner()">⛔ إيقاف المسح</button>
+    <div class="scan-area" id="scanArea" style="display:none">
+      <video id="qr-video" autoplay playsinline muted></video>
+      <div class="scan-overlay"><div class="scan-frame"><div class="scan-line"></div></div></div>
+    </div>
+    <div class="field" style="margin-top:10px"><label class="lbl">كود الجهاز <span class="en">Device Code</span></label><input type="text" id="dev-code" placeholder="APX-BRD-UNIT-001" dir="ltr"></div>
+    <div class="dev-result" id="devResult"><div class="dev-code" id="r-code">—</div><div class="dev-name" id="r-name">—</div><div class="dev-meta" id="r-meta">—</div></div>
+    <button class="btn-outline" onclick="manualLookup()">🔍 بحث يدوي عن الجهاز</button>
+  </div>
+  <div class="card">
+    <div class="card-title"><div class="ico ico-a">🔧</div>تفاصيل البلاغ</div>
+    <div class="field"><label class="lbl">الفرع</label><select id="maint-branch"><option value="بريدة">بريدة — Buraydah</option><option value="عنيزة">عنيزة — Unaizah</option></select></div>
+    <div class="field"><label class="lbl">وصف العطل</label><textarea id="maint-ar" placeholder="صف المشكلة..." rows="3"></textarea></div>
+    <div class="field"><label class="lbl">Issue Description <span class="en">EN</span></label><textarea id="maint-en" placeholder="Describe the issue..." rows="2" dir="ltr"></textarea></div>
+    <div class="field"><label class="lbl">الأولوية • Priority</label>
+      <div class="prio-grp">
+        <button class="prio-btn" data-v="عاجل" onclick="selPrio(this)">🔴 عاجل<br><small>Urgent</small></button>
+        <button class="prio-btn on" data-v="عادي" onclick="selPrio(this)">🟡 عادي<br><small>Normal</small></button>
+        <button class="prio-btn" data-v="منخفض" onclick="selPrio(this)">🟢 منخفض<br><small>Low</small></button>
+      </div>
+    </div>
+  </div>
+  <button class="btn-save" id="bs-maint" onclick="saveMaintenance()">💾 تسجيل بلاغ الصيانة</button>
+</div>
+
+<!-- ══════════ CBAHI ══════════ -->
+<div class="panel" id="panel-cbahi">
+  <div class="card">
+    <div class="card-title"><div class="ico ico-t">🤝</div>اجتماع سباهي • CBAHI Meeting</div>
+    <div class="field"><label class="lbl">تاريخ الاجتماع</label><input type="date" id="cb-date"></div>
+    <div class="field"><label class="lbl">الحاضرون</label><input type="text" id="cb-att" placeholder="إبراهيم، فريق سباهي، مدير العيادة..."></div>
+    <div class="field"><label class="lbl">مخرجات الاجتماع</label><textarea id="cb-out-ar" placeholder="ما تم الاتفاق عليه..." rows="4"></textarea></div>
+    <div class="field"><label class="lbl">Outcomes <span class="en">EN</span></label><textarea id="cb-out-en" placeholder="Agreed outcomes..." rows="3" dir="ltr"></textarea></div>
+    <div class="field"><label class="lbl">بنود العمل Action Items</label><textarea id="cb-act" placeholder="المهام المطلوبة وأصحابها..." rows="3"></textarea></div>
+    <div class="field"><label class="lbl">موعد الاجتماع القادم</label><input type="date" id="cb-next"></div>
+  </div>
+  <button class="btn-save" id="bs-cbahi" onclick="saveCBAHI()">💾 حفظ مخرجات الاجتماع</button>
+</div>
+
+</main>
+
+<!-- BOTTOM NAV -->
+<nav class="bnav">
+  <button class="nav-item on" onclick="goTab('dashboard',this)"><span class="nav-icon">📊</span>لوحة</button>
+  <button class="nav-item" onclick="goTab('achievements',this)"><span class="nav-icon">⭐</span>إنجازات</button>
+  <button class="nav-item" onclick="goTab('audit',this)"><span class="nav-icon">🔍</span>زيارة</button>
+  <button class="nav-item" onclick="goTab('daily',this)"><span class="nav-icon">📋</span>يومي</button>
+  <button class="nav-item" onclick="goTab('maintenance',this)"><span class="nav-icon">🔧</span>صيانة</button>
+  <button class="nav-item" onclick="goTab('cbahi',this)"><span class="nav-icon">🤝</span>سباهي</button>
+</nav>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ══════════ ACHIEVEMENT MODAL ══════════ -->
+<div class="modal-backdrop" id="achModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">⭐ <span id="modalTitle">إضافة إنجاز جديد</span></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="m-rowIndex" value="">
+      <div class="field"><label class="lbl">التاريخ <span class="en">Date</span></label><input type="date" id="m-date"></div>
+      <div class="field"><label class="lbl">القسم / المحور <span class="en">Section</span></label><input type="text" id="m-section" placeholder="مثال: اعتماد سباهي / CBAHI"></div>
+      <div class="field"><label class="lbl">وصف الإنجاز (عربي)</label><textarea id="m-desc-ar" placeholder="صِف ما تم تحقيقه..." rows="4"></textarea></div>
+      <div class="field"><label class="lbl">Description (English)</label><textarea id="m-desc-en" placeholder="Describe the achievement..." rows="3" dir="ltr"></textarea></div>
+      <div class="field">
+        <label class="lbl">الحالة • Status</label>
+        <div class="status-sel">
+          <button class="status-opt on" data-s="مكتمل" onclick="selStatus(this)">✅ مكتمل</button>
+          <button class="status-opt" data-s="جارٍ" onclick="selStatus(this)">🔄 جارٍ</button>
+          <button class="status-opt" data-s="مخطط" onclick="selStatus(this)">📌 مخطط</button>
+          <button class="status-opt" data-s="متوقف" onclick="selStatus(this)">⏸ متوقف</button>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl">نسبة الإنجاز <span class="en">Progress</span></label>
+        <div class="prog-input-wrap">
+          <input type="range" id="m-prog" min="0" max="100" value="100" oninput="updPct(this)">
+          <span class="prog-pct" id="m-pct-disp">100%</span>
+        </div>
+      </div>
+      <div class="field"><label class="lbl">ملاحظات <span class="en">Notes</span></label><input type="text" id="m-notes" placeholder="أي تفاصيل إضافية..."></div>
+      <button class="btn-save" id="m-save-btn" onclick="submitAchievement()" style="margin-top:14px;margin-bottom:4px">💾 حفظ الإنجاز</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+<script>
+// ═══════════ STATE ═══════════
+const chkState = {st:null,la:null,em:null,re:null,ss:null};
+let selPrioVal = 'عادي';
+let scanStream = null, scanIv = null, scanCv = null;
+let allAchievements = [];
+let currentFilter = 'all';
+let pendingDeleteRow = null;
+let currentStatus = 'مكتمل';
+
+// ═══════════ INIT ═══════════
+document.addEventListener('DOMContentLoaded', () => {
+  updateDate();
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('cb-date').value = today;
+  document.getElementById('m-date').value = today;
+  loadDashboard();
+  loadAchievements();
+  document.getElementById('achModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('achModal')) closeModal();
+  });
+});
+
+function updateDate() {
+  document.getElementById('hdrDate').textContent =
+    new Date().toLocaleDateString('ar-SA',{weekday:'short',month:'short',day:'numeric'}).replace(/\u200f/g,'');
+}
+
+// ═══════════ TABS ═══════════
+function goTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab,.nav-item').forEach(b => b.classList.remove('on'));
+  document.getElementById('panel-'+id)?.classList.add('on');
+  document.querySelectorAll(`[data-tab="${id}"]`).forEach(b => b.classList.add('on'));
+  if (btn) btn.classList.add('on');
+  if (id !== 'maintenance') stopScanner();
+}
+document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => goTab(b.dataset.tab, b)));
+
+// ═══════════ BRANCH ═══════════
+function selBranch(btn, ar, en, pfx) {
+  btn.closest('.branch-sel').querySelectorAll('.br-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById(pfx+'-br-ar').value = ar;
+  document.getElementById(pfx+'-br-en').value = en;
+}
+
+// ═══════════ CHECKLIST ═══════════
+function togChk(key, val, btn) {
+  const item = document.getElementById('ci-'+key);
+  item.querySelectorAll('.tog').forEach(b => b.classList.remove('ap','af'));
+  chkState[key] = val;
+  item.className = 'chk-item ' + val;
+  btn.classList.add(val === 'pass' ? 'ap' : 'af');
+}
+
+// ═══════════ PRIORITY ═══════════
+function selPrio(btn) {
+  document.querySelectorAll('.prio-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  selPrioVal = btn.dataset.v;
+}
+
+// ═══════════ ACHIEVEMENTS — LOAD & RENDER ═══════════
+function loadAchievements() {
+  runGAS({ action: 'getAchievements' }, null, res => {
+    if (res.success) {
+      allAchievements = res.data;
+      renderAchievements();
+    }
+  });
+}
+
+const sectionIcons = {
+  'سباهي':'🏥','CBAHI':'🏥','فجوات':'🔍','Gap':'🔍','امتثال':'📋','Compliance':'📋',
+  'أصول':'🏷','Assets':'🏷','كول':'📞','Call':'📞','رقمي':'💻','Digital':'💻',
+  'موارد':'👥','HR':'👥','default':'⭐'
+};
+function getIcon(section) {
+  for (const k in sectionIcons) { if (section && section.includes(k)) return sectionIcons[k]; }
+  return sectionIcons.default;
+}
+const statusColors = {'مكتمل':'badge-done','جارٍ':'badge-prog','مخطط':'badge-plan','متوقف':'badge-hold'};
+const statusEmoji  = {'مكتمل':'✅','جارٍ':'🔄','مخطط':'📌','متوقف':'⏸'};
+
+function renderAchievements() {
+  const q = (document.getElementById('achSearch').value || '').trim().toLowerCase();
+  const list = document.getElementById('achList');
+
+  let data = allAchievements.filter(a => {
+    const matchFilter = currentFilter === 'all' || a.status === currentFilter;
+    const matchSearch = !q || a.desc_ar.toLowerCase().includes(q) || a.section.toLowerCase().includes(q) || (a.desc_en||'').toLowerCase().includes(q);
+    return matchFilter && matchSearch;
+  });
+
+  if (!data.length) {
+    list.innerHTML = `<div class="ach-empty"><div class="big">🔍</div><p>${allAchievements.length === 0 ? 'لا توجد إنجازات بعد — اضغط ➕ لإضافة أول إنجاز' : 'لا توجد نتائج تطابق البحث'}</p></div>`;
+    return;
+  }
+
+  list.innerHTML = data.map(a => {
+    const pct = parseInt(a.progress) || 100;
+    const icon = getIcon(a.section);
+    const bdg  = statusColors[a.status] || 'badge-hold';
+    const emj  = statusEmoji[a.status] || '•';
+    return `
+    <div class="ach-card" id="ach-card-${a.rowIndex}">
+      <div class="ach-card-header">
+        <div class="ach-icon" style="background:var(--b50)">${icon}</div>
+        <div class="ach-meta">
+          <div class="ach-section">${a.section || '—'}</div>
+          <div class="ach-title">${a.desc_ar}</div>
+          <div class="ach-title-en">${a.desc_en || ''}</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <div class="ach-date">📅 ${a.date || '—'}</div>
+            <span class="ach-badge ${bdg}">${emj} ${a.status}</span>
+          </div>
+        </div>
+      </div>
+      <div class="ach-prog-bar"><div class="ach-prog-fill" style="width:${pct}%"></div></div>
+      ${a.notes ? `<div class="ach-notes-strip">💬 ${a.notes}</div>` : ''}
+      <div class="ach-actions">
+        <button class="ach-action-btn edit" onclick="openEditModal(${a.rowIndex})">✏️ تعديل</button>
+        <button class="ach-action-btn toggle-en" onclick="toggleEn(${a.rowIndex})">🌐 EN</button>
+        <button class="ach-action-btn del" onclick="askDelete(${a.rowIndex})">🗑 حذف</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Animate progress bars
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.ach-prog-fill').forEach(el => { el.style.width = el.style.width; });
+  });
+}
+
+function filterAchievements() { renderAchievements(); }
+
+function setFilter(btn, val) {
+  document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  currentFilter = val;
+  renderAchievements();
+}
+
+function toggleEn(rowIndex) {
+  const card = document.getElementById('ach-card-'+rowIndex);
+  if (card) card.classList.toggle('show-en');
+}
+
+// ═══════════ MODAL ═══════════
+function openModal() {
+  document.getElementById('modalTitle').textContent = 'إضافة إنجاز جديد';
+  document.getElementById('m-rowIndex').value = '';
+  document.getElementById('m-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('m-section').value = '';
+  document.getElementById('m-desc-ar').value = '';
+  document.getElementById('m-desc-en').value = '';
+  document.getElementById('m-notes').value = '';
+  document.getElementById('m-prog').value = 100;
+  document.getElementById('m-pct-disp').textContent = '100%';
+  document.getElementById('m-save-btn').textContent = '💾 حفظ الإنجاز';
+  setModalStatus('مكتمل');
+  document.getElementById('achModal').classList.add('open');
+  document.getElementById('m-section').focus();
+}
+
+function openEditModal(rowIndex) {
+  const a = allAchievements.find(x => x.rowIndex === rowIndex);
+  if (!a) return;
+  document.getElementById('modalTitle').textContent = 'تعديل الإنجاز';
+  document.getElementById('m-rowIndex').value = rowIndex;
+  document.getElementById('m-date').value = a.date;
+  document.getElementById('m-section').value = a.section;
+  document.getElementById('m-desc-ar').value = a.desc_ar;
+  document.getElementById('m-desc-en').value = a.desc_en || '';
+  document.getElementById('m-notes').value = a.notes || '';
+  const pct = parseInt(a.progress) || 100;
+  document.getElementById('m-prog').value = pct;
+  document.getElementById('m-pct-disp').textContent = pct + '%';
+  document.getElementById('m-save-btn').textContent = '💾 حفظ التعديلات';
+  setModalStatus(a.status);
+  document.getElementById('achModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('achModal').classList.remove('open');
+}
+
+function setModalStatus(s) {
+  document.querySelectorAll('.status-opt').forEach(b => b.classList.remove('on'));
+  const btn = document.querySelector(`.status-opt[data-s="${s}"]`);
+  if (btn) btn.classList.add('on');
+  currentStatus = s;
+}
+function selStatus(btn) {
+  document.querySelectorAll('.status-opt').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  currentStatus = btn.dataset.s;
+}
+function updPct(el) { document.getElementById('m-pct-disp').textContent = el.value + '%'; }
+
+function submitAchievement() {
+  const desc = document.getElementById('m-desc-ar').value.trim();
+  if (!desc) { showToast('أدخل وصف الإنجاز', 'err'); return; }
+  const rowIndex = document.getElementById('m-rowIndex').value;
+  const data = {
+    date:     document.getElementById('m-date').value,
+    section:  document.getElementById('m-section').value,
+    desc_ar:  desc,
+    desc_en:  document.getElementById('m-desc-en').value,
+    progress: document.getElementById('m-prog').value + '%',
+    status:   currentStatus,
+    notes:    document.getElementById('m-notes').value,
+  };
+  const payload = rowIndex
+    ? { action: 'updateAchievement', rowIndex: parseInt(rowIndex), data }
+    : { action: 'addAchievement', data };
+
+  setLoadBtn('m-save-btn', true);
+  runGAS(payload, 'm-save-btn', res => {
+    if (res.success) {
+      closeModal();
+      loadAchievements();
+      loadDashboard();
+    }
+  });
+}
+
+// ═══════════ DELETE ═══════════
+function askDelete(rowIndex) {
+  pendingDeleteRow = rowIndex;
+  document.getElementById('deleteConfirm').classList.add('show');
+  document.getElementById('deleteConfirm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function cancelDelete() {
+  pendingDeleteRow = null;
+  document.getElementById('deleteConfirm').classList.remove('show');
+}
+function confirmDelete() {
+  if (!pendingDeleteRow) return;
+  runGAS({ action: 'deleteAchievement', rowIndex: pendingDeleteRow }, null, res => {
+    if (res.success) { loadAchievements(); loadDashboard(); }
+  });
+  cancelDelete();
+}
+
+// ═══════════ AUDIT ═══════════
+function saveAudit() {
+  const missing = Object.entries(chkState).filter(([k,v]) => v === null);
+  if (missing.length) { showToast('أكمل جميع بنود القائمة (' + missing.length + ' غير مجابة)', 'err'); return; }
+  const data = {
+    branch_ar: document.getElementById('audit-br-ar').value,
+    branch_en: document.getElementById('audit-br-en').value,
+    ipc:       chkState.st === 'pass',
+    laser:     chkState.la === 'pass',
+    emergency: chkState.em === 'pass',
+    reception: chkState.re === 'pass',
+    fiveS:     chkState.ss === 'pass',
+    notes_ar: document.getElementById('audit-notes-ar').value,
+    notes_en: document.getElementById('audit-notes-en').value,
+  };
+  setLoadBtn('bs-audit', true);
+  runGAS({ action: 'saveAudit', data }, 'bs-audit', res => { if(res.success) loadDashboard(); });
+}
+
+// ═══════════ DAILY ═══════════
+function saveDaily() {
+  const done = document.getElementById('daily-done-ar').value.trim();
+  if (!done) { showToast('أدخل ما تم إنجازه اليوم', 'err'); return; }
+  const data = {
+    branch_ar: document.getElementById('daily-br-ar').value,
+    branch_en: document.getElementById('daily-br-en').value,
+    completed_ar: done,
+    completed_en: document.getElementById('daily-done-en').value,
+    pending_ar: document.getElementById('daily-pend-ar').value,
+    pending_en: document.getElementById('daily-pend-en').value,
+  };
+  setLoadBtn('bs-daily', true);
+  runGAS({ action: 'saveDaily', data }, 'bs-daily');
+}
+
+// ═══════════ MAINTENANCE ═══════════
+function saveMaintenance() {
+  const code  = document.getElementById('dev-code').value.trim();
+  const issue = document.getElementById('maint-ar').value.trim();
+  if (!code)  { showToast('أدخل أو امسح كود الجهاز', 'err'); return; }
+  if (!issue) { showToast('صف العطل بالعربي', 'err'); return; }
+  const data = {
+    branch: document.getElementById('maint-branch').value,
+    deviceCode: code,
+    deviceName: document.getElementById('r-name').textContent,
+    issue_ar: issue,
+    issue_en: document.getElementById('maint-en').value,
+    priority: selPrioVal,
+  };
+  setLoadBtn('bs-maint', true);
+  runGAS({ action: 'saveMaintenance', data }, 'bs-maint');
+}
+
+// ═══════════ CBAHI ═══════════
+function saveCBAHI() {
+  const out = document.getElementById('cb-out-ar').value.trim();
+  if (!out) { showToast('أدخل مخرجات الاجتماع', 'err'); return; }
+  const data = {
+    meetingDate: document.getElementById('cb-date').value,
+    attendees:   document.getElementById('cb-att').value,
+    outcomes_ar: out,
+    outcomes_en: document.getElementById('cb-out-en').value,
+    actionItems: document.getElementById('cb-act').value,
+    nextMeeting: document.getElementById('cb-next').value,
+  };
+  setLoadBtn('bs-cbahi', true);
+  runGAS({ action: 'saveCBAHI', data }, 'bs-cbahi');
+}
+
+// ═══════════ DASHBOARD ═══════════
+function loadDashboard() {
+  runGAS({ action: 'getDashboard' }, null, d => {
+    if (!d.success) return;
+    document.getElementById('s-ach').textContent   = d.achCount;
+    document.getElementById('s-done').textContent  = d.achCompleted;
+    document.getElementById('s-audit').textContent = d.auditCount;
+    document.getElementById('s-maint').textContent = d.maintCount;
+    const achPct = d.achCount ? Math.round(d.achCompleted/d.achCount*100) : 0;
+    document.getElementById('p-ach-pct').textContent  = achPct + '%';
+    document.getElementById('p-ach-bar').style.width  = achPct + '%';
+    document.getElementById('p-audit-pct').textContent = d.auditPassRate + '%';
+    document.getElementById('p-audit-bar').style.width = d.auditPassRate + '%';
+  });
+}
+
+// ═══════════ QR SCANNER ═══════════
+async function startScanner() {
+  if (!window.jsQR) { showToast('مكتبة QR غير جاهزة', 'err'); return; }
+  try {
+    scanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+    const v = document.getElementById('qr-video');
+    v.srcObject = scanStream;
+    document.getElementById('scanArea').style.display = 'block';
+    document.getElementById('btnStartScan').style.display = 'none';
+    document.getElementById('btnStopScan').style.display = 'block';
+    if (!scanCv) scanCv = document.createElement('canvas');
+    scanIv = setInterval(() => {
+      if (v.readyState !== v.HAVE_ENOUGH_DATA) return;
+      const ctx = scanCv.getContext('2d');
+      scanCv.width = v.videoWidth; scanCv.height = v.videoHeight;
+      ctx.drawImage(v, 0, 0);
+      const img = ctx.getImageData(0, 0, scanCv.width, scanCv.height);
+      const code = jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
+      if (code?.data) {
+        document.getElementById('dev-code').value = code.data;
+        stopScanner();
+        doLookup(code.data);
+      }
+    }, 300);
+  } catch(err) { showToast('تعذر فتح الكاميرا', 'err'); }
+}
+function stopScanner() {
+  if (scanIv) { clearInterval(scanIv); scanIv = null; }
+  if (scanStream) { scanStream.getTracks().forEach(t => t.stop()); scanStream = null; }
+  document.getElementById('scanArea').style.display = 'none';
+  document.getElementById('btnStartScan').style.display = 'flex';
+  document.getElementById('btnStopScan').style.display = 'none';
+}
+function manualLookup() {
+  const code = document.getElementById('dev-code').value.trim();
+  if (!code) { showToast('أدخل الكود أولاً', 'err'); return; }
+  doLookup(code);
+}
+function doLookup(code) {
+  runGAS({ action: 'lookupDevice', code }, null, res => {
+    const box = document.getElementById('devResult');
+    document.getElementById('r-code').textContent = res.found ? res.code : code;
+    document.getElementById('r-name').textContent = res.found ? (res.name_ar + ' — ' + res.name_en) : 'غير مسجل في قاعدة البيانات';
+    document.getElementById('r-meta').textContent = res.found ? ('الفرع: '+res.branch+' | القسم: '+res.department) : 'Device not in inventory';
+    box.classList.add('show');
+  });
+}
+
+// ═══════════ GAS RUNNER ═══════════
+function runGAS(payload, btnId, cb) {
+  try {
+    google.script.run
+      .withSuccessHandler(res => {
+        if (btnId) setLoadBtn(btnId, false);
+        showToast(res.message || '✅', res.success ? 'ok' : 'err');
+        if (cb) cb(res);
+      })
+      .withFailureHandler(err => {
+        if (btnId) setLoadBtn(btnId, false);
+        showToast('خطأ: ' + err.message, 'err');
+      })
+      .handleRequest(payload);
+  } catch(e) {
+    // Preview mode
+    if (btnId) setLoadBtn(btnId, false);
+    const mock = { success: true, message: '✅ وضع المعاينة — سيعمل بعد النشر', data: [] };
+    if (payload.action === 'getAchievements') mock.data = getLocalMockAchievements();
+    if (payload.action === 'getDashboard') Object.assign(mock, {achCount:8,achCompleted:7,auditCount:0,maintCount:0,dailyCount:0,auditPassRate:0});
+    if (cb) cb(mock);
+  }
+}
+
+function getLocalMockAchievements() {
+  return [
+    {rowIndex:2,date:'2026-02-09',section:'اعتماد سباهي / CBAHI',desc_ar:'التواصل مع فريق سباهي وصياغة اتفاقية التعاون',desc_en:'Contacted SBAHI, drafted cooperation agreement',progress:'100%',status:'مكتمل',notes:'',lastEdit:''},
+    {rowIndex:3,date:'2026-02-15',section:'تحليل الفجوات / Gap Analysis',desc_ar:'زيارات ميدانية لتقييم الفجوات وتعيين المسؤولين',desc_en:'Field visits for gap analysis',progress:'100%',status:'مكتمل',notes:'',lastEdit:''},
+    {rowIndex:4,date:'2026-02-25',section:'الامتثال الطبي / Compliance',desc_ar:'مخاطبة الشركات لتوفير رخص MDMA ورخص SFDA',desc_en:'Contacted suppliers for MDMA and SFDA permits',progress:'90%',status:'جارٍ',notes:'قيد الاكتمال — آخر رد متوقع نهاية مارس',lastEdit:''},
+    {rowIndex:5,date:'2026-03-05',section:'إدارة الأصول / Assets',desc_ar:'جرد كامل لأجهزة فرع بريدة ووضع ملصقات QR',desc_en:'Full inventory with QR tags',progress:'100%',status:'مكتمل',notes:'',lastEdit:''},
+    {rowIndex:6,date:'2026-03-10',section:'الكول سنتر / Call Center',desc_ar:'بناء نظام حوافز للمشرفة رهف وفريقها (9 موظفات)',desc_en:'Incentive system for Rahaf and 9 agents',progress:'100%',status:'مكتمل',notes:'نقطتان لكل رصد — حافز 5 ريال',lastEdit:''},
+    {rowIndex:7,date:'2026-03-15',section:'الأدلة الرقمية / Digital',desc_ar:'دليل إرشادي للموظفين محمي بكلمة مرور مع أسعار الخدمات',desc_en:'Password-protected employee guide',progress:'100%',status:'مكتمل',notes:'',lastEdit:''},
+    {rowIndex:8,date:'2026-03-20',section:'الموارد البشرية / HR',desc_ar:'مراجعة الوصف الوظيفي وتفعيل نماذج Orientation',desc_en:'Job descriptions and orientation forms',progress:'100%',status:'مكتمل',notes:'',lastEdit:''},
+  ];
+}
+
+// ═══════════ UI HELPERS ═══════════
+const btnLabels = {
+  'bs-audit':'💾 حفظ نتيجة الزيارة','bs-daily':'💾 حفظ متابعة اليوم',
+  'bs-maint':'💾 تسجيل بلاغ الصيانة','bs-cbahi':'💾 حفظ مخرجات الاجتماع',
+  'm-save-btn':'💾 حفظ الإنجاز'
+};
+function setLoadBtn(id, loading) {
+  const b = document.getElementById(id);
+  if (!b) return;
+  if (loading) { b.classList.add('loading'); b.textContent = '⏳ جارٍ الحفظ...'; }
+  else { b.classList.remove('loading'); b.innerHTML = btnLabels[id] || '💾 حفظ'; }
+}
+let toastTmr;
+function showToast(msg, type='ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + type;
+  clearTimeout(toastTmr);
+  toastTmr = setTimeout(() => t.classList.remove('show'), 3200);
+}
+</script>
+</body>
+</html>
