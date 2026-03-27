@@ -439,6 +439,10 @@ textarea{resize:vertical;min-height:75px;line-height:1.6}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
 <script>
+// ══════════════════════════════════════════════
+//  ضع رابط الـ Web App هنا
+// ══════════════════════════════════════════════
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxf78T-P1OtOvPpj3HoceCtChXXuiKE59Thx4YKlkVNnoWRmAlmBlJVJywxu2ZIv8Yg/exec';
 // ═══════════ STATE ═══════════
 const chkState = {st:null,la:null,em:null,re:null,ss:null};
 let selPrioVal = 'عادي';
@@ -817,27 +821,32 @@ function doLookup(code) {
   });
 }
 
-// ═══════════ GAS RUNNER ═══════════
-function runGAS(payload, btnId, cb) {
+// ═══════════ GAS RUNNER — fetch API ═══════════
+async function runGAS(payload, btnId, cb) {
   try {
-    google.script.run
-      .withSuccessHandler(res => {
-        if (btnId) setLoadBtn(btnId, false);
-        showToast(res.message || '✅', res.success ? 'ok' : 'err');
-        if (cb) cb(res);
-      })
-      .withFailureHandler(err => {
-        if (btnId) setLoadBtn(btnId, false);
-        showToast('خطأ: ' + err.message, 'err');
-      })
-      .handleRequest(payload);
-  } catch(e) {
-    // Preview mode
+    let res;
+    const readActions = ['getAchievements','getDashboard','lookupDevice'];
+    if (readActions.includes(payload.action)) {
+      // GET request
+      const params = new URLSearchParams({ action: payload.action });
+      if (payload.code) params.append('code', payload.code);
+      const r = await fetch(GAS_URL + '?' + params.toString());
+      res = await r.json();
+    } else {
+      // POST request
+      const r = await fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      res = await r.json();
+    }
     if (btnId) setLoadBtn(btnId, false);
-    const mock = { success: true, message: '✅ وضع المعاينة — سيعمل بعد النشر', data: [] };
-    if (payload.action === 'getAchievements') mock.data = getLocalMockAchievements();
-    if (payload.action === 'getDashboard') Object.assign(mock, {achCount:8,achCompleted:7,auditCount:0,maintCount:0,dailyCount:0,auditPassRate:0});
-    if (cb) cb(mock);
+    showToast(res.message || '✅', res.success ? 'ok' : 'err');
+    if (cb) cb(res);
+  } catch(e) {
+    if (btnId) setLoadBtn(btnId, false);
+    showToast('تعذر الاتصال بالسيرفر', 'err');
+    console.error(e);
   }
 }
 
