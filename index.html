@@ -511,6 +511,21 @@ function selBranch(btn, ar, en, pfx) {
   btn.classList.add('on');
   document.getElementById(pfx+'-br-ar').value = ar;
   document.getElementById(pfx+'-br-en').value = en;
+  // إخفاء بند الليزر لفرع عنيزة (لا يوجد ليزر حالياً)
+  if (pfx === 'audit') {
+    const laserRow = document.getElementById('ci-la');
+    if (laserRow) {
+      if (ar === 'عنيزة') {
+        laserRow.style.display = 'none';
+        chkState.la = 'na'; // not applicable
+      } else {
+        laserRow.style.display = 'flex';
+        chkState.la = null;
+        laserRow.querySelectorAll('.tog').forEach(b => b.classList.remove('ap','af'));
+        laserRow.className = 'chk-item';
+      }
+    }
+  }
 }
 
 // ═══════════ CHECKLIST ═══════════
@@ -715,6 +730,8 @@ function confirmDelete() {
 // ═══════════ AUDIT ═══════════
 function saveAudit() {
   const missing = Object.entries(chkState).filter(([k,v]) => v === null);
+  // استثناء البنود غير المنطبقة (na)
+  const applicable = Object.entries(chkState).filter(([k,v]) => v !== 'na');
   if (missing.length) { showToast('أكمل جميع بنود القائمة (' + missing.length + ' غير مجابة)', 'err'); return; }
   const data = {
     branch_ar:  document.getElementById('audit-br-ar').value,
@@ -743,16 +760,19 @@ function exportAuditPDF() {
   const notesAr  = document.getElementById('audit-notes-ar').value;
   const notesEn  = document.getElementById('audit-notes-en').value;
 
-  const items = [
+  const allItems = [
     { key:'re', label:'١ · أداء الاستقبال وتجربة المريض', en:'Reception Performance & Patient Experience' },
     { key:'ss', label:'٢ · ترتيب بيئة العمل — 5S',         en:'Workplace Organization — 5S' },
     { key:'st', label:'٣ · مكافحة العدوى (IPC)',            en:'Infection Prevention & Control' },
     { key:'em', label:'٤ · جاهزية الطوارئ والإسعافات',      en:'Emergency & First Aid Readiness' },
     { key:'la', label:'٥ · سلامة الليزر',                   en:'Laser Safety' },
   ];
+  // استثناء بند الليزر إذا كان الفرع عنيزة
+  const items = allItems.filter(it => !(it.key === 'la' && branch === 'عنيزة'));
 
-  const passCount = Object.values(chkState).filter(v => v === 'pass').length;
-  const total     = Object.keys(chkState).length;
+  const applicableEntries = Object.entries(chkState).filter(([k,v]) => v !== 'na');
+  const passCount = applicableEntries.filter(([k,v]) => v === 'pass').length;
+  const total     = applicableEntries.length;
   const score     = Math.round((passCount / total) * 100);
   const scoreColor= score >= 80 ? '#1B5E20' : score >= 60 ? '#F57F17' : '#B71C1C';
   const scoreBg   = score >= 80 ? '#C8E6C9' : score >= 60 ? '#FFF9C4' : '#FFCDD2';
@@ -841,12 +861,20 @@ function exportAuditPDF() {
 <!-- الملاحظات -->
 ${(notesAr || notesEn) ? `
 <div style="margin-top:20px">
-  <div style="font-size:13px;font-weight:700;color:#0D47A1;margin-bottom:8px">الملاحظات • Notes</div>
-  <div style="background:#F8FAFF;border:1px solid #E3F2FD;border-radius:10px;padding:14px">
-    ${notesAr ? `<div style="font-size:13px;line-height:1.7;margin-bottom:6px">${notesAr}</div>` : ''}
-    ${notesEn ? `<div style="font-size:12px;color:#546E7A;line-height:1.7;direction:ltr">${notesEn}</div>` : ''}
+  <div style="font-size:13px;font-weight:700;color:#0D47A1;margin-bottom:10px;display:flex;align-items:center;gap:8px">
+    <span style="background:#E3F2FD;padding:4px 10px;border-radius:6px">📝</span> الملاحظات • Notes
   </div>
-</div>` : ''}
+  <table style="width:100%;border-collapse:collapse;border:1px solid #E3F2FD;border-radius:10px;overflow:hidden">
+    ${notesAr ? `<tr>
+      <td style="width:80px;padding:10px 14px;background:#E3F2FD;font-size:11px;font-weight:700;color:#0D47A1;vertical-align:top">ملاحظات</td>
+      <td style="padding:10px 14px;font-size:13px;line-height:1.9;color:#1A237E;border-right:3px solid #1565C0;background:#F8FAFF">${notesAr.split("\n").filter(l=>l.trim()).map(l=>"<div style='margin-bottom:3px'>• "+l.trim()+"</div>").join("")}</td>
+    </tr>` : ""}
+    ${notesEn ? `<tr>
+      <td style="width:80px;padding:10px 14px;background:#FFF8E1;font-size:11px;font-weight:700;color:#F57F17;vertical-align:top;border-top:1px solid #E3F2FD">Notes</td>
+      <td style="padding:10px 14px;font-size:12px;line-height:1.9;color:#546E7A;direction:ltr;border-right:3px solid #F57F17;background:#FFFDE7;border-top:1px solid #E3F2FD">${notesEn.split("\n").filter(l=>l.trim()).map(l=>"<div style='margin-bottom:3px'>• "+l.trim()+"</div>").join("")}</td>
+    </tr>` : ""}
+  </table>
+</div>` : ""}
 
 <!-- التوقيع -->
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:30px">
